@@ -47,6 +47,31 @@ def extract_names(filename):
     """
     names = []
     # +++your code here+++
+    with open(filename, "r") as document:
+        doc_text = document.read()
+        year = re.search(r'Popularity\sin\s(\d\d\d\d)', doc_text)
+        if not year:
+            print("No year found")
+            sys.exit(1)
+        # print(year)
+        names.append(year.group(1))
+        name_tuples = re.findall(r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', doc_text)
+        rank_dict = {}
+        for rank, boy_name, girl_name in name_tuples:
+            # print(ranks)
+            # (rank, boy_name, girl_name) = rank_name
+            # print(rank, boy_name, girl_name)
+            if girl_name not in rank_dict:
+                rank_dict[girl_name] = rank
+            if boy_name not in rank_dict:
+                rank_dict[boy_name] = rank
+        sorted_dict = sorted(rank_dict.keys())
+        # print(sorted_dict)
+        for name in sorted_dict:
+            # print(name)
+            # print(rank_dict[name])
+            names.append("{} {}".format(name, rank_dict[name]))
+    # print(names)
     return names
 
 
@@ -82,6 +107,16 @@ def main(args):
     # or to write the list to a summary file e.g. `baby1990.html.summary`
 
     # +++your code here+++
+    for filename in file_list:
+        names = extract_names(filename)
+        text = '\n'.join(names)
+
+        if create_summary:
+            with open(filename, "r"):
+                with open(filename + '.summary', "w") as w_f:
+                    w_f.write(text + '\n')
+        else:
+            print(text)
 
 
 if __name__ == '__main__':
